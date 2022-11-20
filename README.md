@@ -1,4 +1,4 @@
-# Mass-Art
+# Mass'Art
 Project for Hackathon#3 by Gotta Go Hack (EPITA Engineering school)
 
 In this repository you will find :
