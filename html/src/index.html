@@ -1,0 +1,87 @@
+<style>
+#top {
+    position: relative;
+}
+
+#symbol {
+    vertical-align: middle;
+    height: 1em;
+}
+
+#amount {
+    vertical-align: middle;
+}
+
+#claim {
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
+#preview {
+    display: block;
+    padding: 5px;
+    width: 49%;
+    box-sizing: border-box;
+}
+
+#preview_img {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+#rightpan {
+    position: absolute;
+    display: block;
+    right: 0;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    padding: 5px;
+}
+
+#rightpantop {
+    display: inline-block;
+    vertical-align: middle;
+    width: 98%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#aligner {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#odd {
+    padding-left: 20px;
+}
+
+#count {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 6px;
+}
+</style>
+
+<div id="main">
+    <div id="top">
+        <div id="preview">
+            <img id="preview_img" src="https://d23.com/app/uploads/2020/01/1180w-463h_010920-riviera-art-gallery-780x440.jpg" />
+        </div>
+        <div id="rightpan">
+            <div id="count">
+                1 / 10 Éléments aquéries
+            </div>
+            <span id="aligner"></span>
+            <span id="rightpantop">
+                <span id="amount">0.002</span>
+                <img id="symbol" src="curr.png" />
+                <button id="claim">Donnée</button>
+            </span>
+        </div>
+    </div>
+    <div id="odd">2 % de chance d'avoir cette Art</div>
+</div>

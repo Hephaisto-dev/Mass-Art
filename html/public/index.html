@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Mass'Art</title>
+
+    <style>
+      #top, #main_artist, #main {
+          position: relative;
+      }
+      
+      #symbol {
+          vertical-align: middle;
+          height: 1em;
+      }
+      
+      #amount {
+          vertical-align: middle;
+      }
+      
+      #claim {
+          vertical-align: middle;
+          margin-left: 2px;
+      }
+      
+      #preview, #spreview {
+          display: block;
+          padding: 5px;
+          width: 49%;
+          box-sizing: border-box;
+      }
+      
+      #preview_img, #spreview_img {
+          width: 100%;
+          padding: 0;
+          margin: 0;
+      }
+      
+      #rightpan, #rightpan2 {
+          position: absolute;
+          display: block;
+          right: 0;
+          left: 50%;
+          top: 0;
+          height: 100%;
+          padding: 5px;
+      }
+      
+      #rightpantop {
+          display: inline-block;
+          vertical-align: middle;
+          width: 98%;
+          box-sizing: border-box;
+          text-align: center;
+      }
+      
+      #aligner {
+          display: inline-block;
+          height: 100%;
+          vertical-align: middle;
+      }
+      
+      #odd {
+          padding-left: 20px;
+      }
+      
+      #count {
+          position: absolute;
+          top: 0;
+          left: 0;
+          margin: 6px;
+      }
+
+      #nextbtn {
+          position: fixed;
+          top: 4px;
+          right: 4px;
+      }
+      </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <h2>Visiter les arts:</h2>
+
+    <div id="main">
+      <div id="top">
+          <button id="nextbtn">Changer d'image</button>
+          <div id="preview">
+              <img id="preview_img" src="" style="min-height: 200px;" />
+          </div>
+          <div id="rightpan">
+              <div id="count">
+                  1 / 10 Éléments aquéries
+              </div>
+              <span id="aligner"></span>
+              <span id="rightpantop">
+                  <button id="lessbtn">-</button>
+                  <button id="morebtn">+</button>
+                  <span id="amount">10</span>
+                  <img id="symbol" src="curr.png" />
+                  <button id="claim">Donnée</button>
+              </span>
+          </div>
+      </div>
+      <div id="odd">2 % de chance d'avoir cette Art</div>
+    </div>
+
+    <br/>
+    <br/>
+    <br/>
+    <h2>Ajouter une art (partie dédié à l'artiste):</h2>
+
+    <div id="main_artist">
+        <div id="spreview">
+            <img id="spreview_img" src="https://d23.com/app/uploads/2020/01/1180w-463h_010920-riviera-art-gallery-780x440.jpg" />
+        </div>
+        <div id="rightpan2">
+            <div>
+                <div>
+                    <label>Owner addresse : </label>
+                    <input type="text" id="owner" />
+                </div>
+                <br/>
+                <!-- <div>
+                    <label>URL de l'image : </label>
+                    <input type="text" id="url" />
+                </div> -->
+                <br/>
+                <div>
+                    <label style="vertical-align: middle;">Pourcentage : </label>
+                    <input style="vertical-align: middle;" type="range" value="50" min="1" max="100" step="1" id="percent" />
+                    <span style="vertical-align: middle;" id="percent_display">50 %</span>
+                </div>
+                <br/>
+                <div id="dropoff">
+                    <input type="file" id="dropoff_image" name="img" accept="image/*"></input>
+                    <input type="submit" value="Téléverser" id="upload" />
+                </div>
+                <br/>
+                <button id="addbtn">Ajouter cette art</button>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
