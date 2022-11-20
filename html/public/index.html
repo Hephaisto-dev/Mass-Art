@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="%PUBLIC_URL%/icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -97,6 +97,10 @@
           top: 4px;
           right: 4px;
       }
+
+      body {
+          max-width: 500pt;
+      }
       </style>
   </head>
   <body>
@@ -111,20 +115,20 @@
               <img id="preview_img" src="" style="min-height: 200px;" />
           </div>
           <div id="rightpan">
-              <div id="count">
+              <!-- <div id="count">
                   1 / 10 Éléments aquéries
-              </div>
+              </div> -->
               <span id="aligner"></span>
               <span id="rightpantop">
                   <button id="lessbtn">-</button>
                   <button id="morebtn">+</button>
                   <span id="amount">10</span>
-                  <img id="symbol" src="curr.png" />
+                  <img id="symbol" src="icon.png" />
                   <button id="claim">Donnée</button>
               </span>
           </div>
       </div>
-      <div id="odd">2 % de chance d'avoir cette Art</div>
+      <div id="odd"></div>
     </div>
 
     <br/>

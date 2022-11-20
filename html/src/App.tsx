@@ -78,7 +78,7 @@ function displaySImage() {
 function displayPercent() {
   let e = document.getElementById("odd");
   if (!e) return;
-  e.innerText = arts[currentArt].percentage.toString() + " %";
+  e.innerText = arts[currentArt].percentage.toString() + " % de chance d'avoir cette Art";
 }
 
 
