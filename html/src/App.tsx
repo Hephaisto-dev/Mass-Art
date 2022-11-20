@@ -31,8 +31,8 @@ const client = new Web3Storage({
 
 async function getField(key : string) : Promise<string | null> {
   let r = await web3Client.publicApi().getDatastoreEntries([{address:scAddr, key:key} as IDatastoreEntryInput]);
-  if (!r[0].final) return null;
-  return r[0].final;
+  if (!r[0].candidate) return null;
+  return r[0].candidate;
 }
 
 
