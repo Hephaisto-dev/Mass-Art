@@ -11,12 +11,14 @@ import {
 } from "@massalabs/massa-web3";
 import Args from "@massalabs/massa-web3/dist/utils/arguments";
 
-import { Web3Storage, Web3File } from 'web3.storage'
+import { Web3Storage } from 'web3.storage'
 
 
-const fee = 0;
+const fee = 1;
 const clientPrivateKey = "S1vwe5yhxWoL1QkfzFw78js4RRhin9Yo8C4wTZ7o1iQFHtNupEB";
-const scAddr = "A1UtSSQ8ybvqtmSvaQtmz4Vm9UiXKTcenxMwxTYKDXeQ2uiJPh2";
+//const scAddr = "A1UtSSQ8ybvqtmSvaQtmz4Vm9UiXKTcenxMwxTYKDXeQ2uiJPh2";
+//const scAddr = "A1rsrLuouCuW2tzfta2zuX6c6bZZkUaPmGjq5f7wEPsNRLjpqYh";
+const scAddr = "A12oVQwWi6dHa4HwDZ3NXzmHFNCWfitwmLGYb9ietwpfb6abj6Sb";
 
 
 
@@ -34,7 +36,11 @@ async function getField(key : string) : Promise<string | null> {
 }
 
 
+// Global variables
 var arts : any[] = [];
+var amount = 2;
+var currentArt = 0;
+var simgsrc = "";
 
 
 async function fetchArts() {
@@ -61,6 +67,12 @@ async function fetchArts() {
 }
 
 
+function displayCount() {
+  let e = document.getElementById("count");
+  if (!e) return;
+  e.innerText = "Art " + (currentArt+1).toString() + " / " + arts.length.toString();
+}
+
 function displayAmount() {
   let e = document.getElementById("amount");
   if (e == null) return;
@@ -78,8 +90,34 @@ function displaySImage() {
 function displayPercent() {
   let e = document.getElementById("odd");
   if (!e) return;
-  e.innerText = arts[currentArt].percentage.toString() + " % de chance d'avoir cette Art";
+  e.innerText = arts[currentArt].percentage.toString() + " % de chance d'avoir cette oeuvre d'art";
 }
+
+function displayInPercent() {
+  let v = (document.getElementById("percent") as HTMLInputElement).value;
+  let e = document.getElementById("percent_display");
+  if (!e) return;
+  e.innerText = parseInt(v).toString() + " %";
+}
+
+function showLoader(show : boolean) {
+  let e = document.getElementById("preview_ldr");
+  if (!e) return;
+  e.style.display = show ? "inline-block" : "none";
+}
+
+function showSLoader(show : boolean) {
+  let e = document.getElementById("spreview_ldr");
+  if (!e) return;
+  e.style.display = show ? "inline-block" : "none";
+}
+
+function enableTips(enable : boolean) {
+  let e = document.getElementById("rightpantop");
+  if (!e) return;
+  e.setAttribute("disabled", enable ? "1" : "0");
+}
+
 
 
 function printData(datas : any) {
@@ -95,25 +133,33 @@ function printData(datas : any) {
 }
 
 
-var amount = 10;
-var currentArt = 0;
 
 
 function nextArt() {
   if (arts.length > 0) {
-    currentArt = (currentArt + 1) % arts.length;
+    currentArt = (currentArt + 1) % (arts.length);
   }
 }
 
 
 async function updateArts() {
-  console.log("Update arts");
+  //console.log("Update arts");
   arts = await fetchArts();
   if (arts.length > 0) {
     displayPercent();
     displayAmount();
     displayImage();
+    displayCount();
+    showLoader(false);
+    enableTips(!arts[currentArt].sold);
   }
+}
+
+
+function cyclicUpdateArts() {
+  updateArts().then(() => {
+    setTimeout(cyclicUpdateArts, 1000);
+  });
 }
 
 
@@ -134,16 +180,10 @@ WalletClient.getAccountFromSecretKey(clientPrivateKey).then((a : IAccount) => {
 
     updateArts().then(() => {
       printData(arts);
+      setTimeout(cyclicUpdateArts, 2000);
     });
   });
 });
-
-
-
-var images = [
-  "https://d23.com/app/uploads/2020/01/1180w-463h_010920-riviera-art-gallery-780x440.jpg",
-];
-var simgsrc = images[0];
 
 
 
@@ -170,12 +210,13 @@ function doTip() {
   let args = new Args();
   args.addU32(BigInt(arts[currentArt].id));
 
+  console.log("Transfer " + amount.toString() + " coins");
   web3Client.smartContracts().callSmartContract(
     {
       fee: fee,
       maxGas: 70000000,
       gasPrice: 0,
-      coins: amount,
+      coins: amount * 1000000000,
       targetAddress: scAddr,
       functionName: "draw",
       parameter: args.serialize()
@@ -206,72 +247,57 @@ function getPercent() : number {
 
 
 function addArt() {
-  let owner : string = getOwner();
-  let percent : number = getPercent();
-
-  console.log("Add art with:");
-  console.log("  Owner : " + owner);
-  console.log("  Percentage : " + percent.toString());
-
-  let args = new Args();
-  args.addString(owner);
-  args.addU32(BigInt(percent));
-  args.addString(simgsrc);
-
-  web3Client.smartContracts().callSmartContract(
-    {
-      fee: fee,
-      maxGas: 70000000,
-      gasPrice: 0,
-      coins: 0,
-      targetAddress: scAddr,
-      functionName: "add",
-      parameter: args.serialize()
-    } as ICallData, account
-  ).then(function (data : Array<string>) {
-    console.log("Call draw with args : ", args);
-    console.log("callSmartContract result : ", JSON.stringify(data));
-    for (let i = 0; i < data.length; i++) {
-      waitResponse(data[i]).then(() => {
-        updateArts();
-      });
-    }
+  return new Promise<void>((resolve, reject) => {
+    let owner : string = getOwner();
+    let percent : number = getPercent();
+  
+    console.log("Add art with:");
+    console.log("  Owner : " + owner);
+    console.log("  Percentage : " + percent.toString());
+  
+    let args = new Args();
+    args.addString(owner);
+    args.addU32(BigInt(percent));
+    args.addString(simgsrc);
+  
+    web3Client.smartContracts().callSmartContract(
+      {
+        fee: fee,
+        maxGas: 70000000,
+        gasPrice: 0,
+        coins: 0,
+        targetAddress: scAddr,
+        functionName: "add",
+        parameter: args.serialize()
+      } as ICallData, account
+    ).then(function (data : Array<string>) {
+      console.log("Call draw with args : ", args);
+      console.log("callSmartContract result : ", JSON.stringify(data));
+      for (let i = 0; i < data.length; i++) {
+        waitResponse(data[i]).then(() => {
+          updateArts();
+        });
+      }
+      resolve();
+    });
   });
 }
 
 
-function displayInPercent() {
-  let v = (document.getElementById("percent") as HTMLInputElement).value;
-  let e = document.getElementById("percent_display");
-  if (!e) return;
-  e.innerText = parseInt(v).toString() + " %";
-}
 
 
-
-async function onSendFile() {
+async function sendFile() {
   console.log("Start uploading file ...");
   const fileInput = document.querySelector('input[type="file"]') as any;
   if (!fileInput) return;
 
   // Pack files into a CAR and send to web3.storage
-  const rootCid = await client.put(fileInput.files) // Promise<CIDString>
+  const cid = await client.put(fileInput.files) // Promise<CIDString>
+  const name = fileInput.files.item(0).name;
 
-  // Get info on the Filecoin deals that the CID is stored in
-  //const info = await client.status(rootCid) // Promise<Status | undefined>
-
-  // Fetch and verify files from web3.storage
-  const res = await client.get(rootCid) // Promise<Web3Response | null>
-  if (!res) return;
-  
-  const files : Web3File[] = await res.files() // Promise<Web3File[]>
-  console.log(files);
-  if (files.length > 0) {
-    let file : Web3File = files[0];
-    simgsrc = "http://" + file.cid + ".ipfs.w3s.link";
-    displaySImage();
-  }
-  console.log("File uploaded");
+  simgsrc = "http://" + cid + ".ipfs.w3s.link/" + name;
+  displaySImage();
+  console.log("File '" + name + "' uploaded with CID : " + cid);
 }
 
 
@@ -280,7 +306,7 @@ function main() {
   document.getElementById("claim")?.addEventListener("click", () => {
     if (arts.length > 0) {
       doTip();
-      amount = 10;
+      amount = 2;
       displayAmount();
     } else {
       alert("Pas d'art sur laquelle faire un don");
@@ -288,7 +314,7 @@ function main() {
   });
 
   document.getElementById("morebtn")?.addEventListener("click", () => {
-    amount += 10;
+    amount += 2;
     displayAmount();
   });
 
@@ -299,21 +325,41 @@ function main() {
 
   document.getElementById("nextbtn")?.addEventListener("click", () => {
     nextArt();
-    displayImage();
-    displayPercent();
+    if (arts.length > 0) {
+      displayImage();
+      displayPercent();
+      displayCount();
+      enableTips(!arts[currentArt].sold);
+    }
   });
 
   document.getElementById("addbtn")?.addEventListener("click", () => {
-    addArt();
+    showSLoader(true);
+    let e = document.getElementById("url") as HTMLInputElement;
+    if (e && e.value) {
+      simgsrc = e.value;
+      displaySImage();
+      addArt().then(() => {
+        showSLoader(false);
+      });
+    } else {
+      sendFile().then(() => {
+        addArt().then(() => {
+          showSLoader(false);
+        });
+      });
+    }
   });
 
   document.getElementById("percent")?.addEventListener("change", () => {
     displayInPercent();
   });
 
-  document.getElementById("upload")?.addEventListener("click", () => {
-    onSendFile();
-  });
+  displayInPercent();
+
+  showSLoader(false);
+  showLoader(true);
+  enableTips(false);
 }
 
 

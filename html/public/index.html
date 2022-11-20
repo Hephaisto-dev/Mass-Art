@@ -48,6 +48,7 @@
           display: block;
           padding: 5px;
           width: 49%;
+          position: relative;
           box-sizing: border-box;
       }
       
@@ -101,30 +102,72 @@
       body {
           max-width: 500pt;
       }
+
+
+
+      .lds-ring {
+        display: inline-block;
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        top: 50%;
+        left: 50%;
+        margin-left: -40px;
+        margin-top: -40px;
+        }
+        .lds-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid rgb(0, 0, 0);
+        border-radius: 50%;
+        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: rgb(0, 0, 0) transparent transparent transparent;
+        }
+        .lds-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+        }
+        .lds-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+        }
+        .lds-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+        }
+        @keyframes lds-ring {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+        }
+        
       </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <h2>Visiter les arts:</h2>
+    <h2>Visiter l'univers:</h2>
 
     <div id="main">
       <div id="top">
           <button id="nextbtn">Changer d'image</button>
           <div id="preview">
+              <div class="lds-ring" id="preview_ldr"><div></div><div></div><div></div><div></div></div>
               <img id="preview_img" src="" style="min-height: 200px;" />
           </div>
           <div id="rightpan">
-              <!-- <div id="count">
-                  1 / 10 Éléments aquéries
-              </div> -->
+              <div id="count"></div>
               <span id="aligner"></span>
               <span id="rightpantop">
                   <button id="lessbtn">-</button>
                   <button id="morebtn">+</button>
                   <span id="amount">10</span>
                   <img id="symbol" src="icon.png" />
-                  <button id="claim">Donnée</button>
+                  <button id="claim">Donner</button>
               </span>
           </div>
       </div>
@@ -134,23 +177,24 @@
     <br/>
     <br/>
     <br/>
-    <h2>Ajouter une art (partie dédié à l'artiste):</h2>
+    <h2>Ajouter une oeuvre d'art (partie dédiée à l'artiste):</h2>
 
     <div id="main_artist">
         <div id="spreview">
-            <img id="spreview_img" src="https://d23.com/app/uploads/2020/01/1180w-463h_010920-riviera-art-gallery-780x440.jpg" />
+            <div class="lds-ring" id="spreview_ldr"><div></div><div></div><div></div><div></div></div>
+            <img id="spreview_img" style="min-height: 200px;" src="" />
         </div>
         <div id="rightpan2">
             <div>
                 <div>
-                    <label>Owner addresse : </label>
+                    <label>Addresse du propriétaire : </label>
                     <input type="text" id="owner" />
                 </div>
                 <br/>
-                <!-- <div>
-                    <label>URL de l'image : </label>
+                <div>
+                    <label>URL de l'image (optionel) : </label>
                     <input type="text" id="url" />
-                </div> -->
+                </div>
                 <br/>
                 <div>
                     <label style="vertical-align: middle;">Pourcentage : </label>
@@ -160,10 +204,9 @@
                 <br/>
                 <div id="dropoff">
                     <input type="file" id="dropoff_image" name="img" accept="image/*"></input>
-                    <input type="submit" value="Téléverser" id="upload" />
                 </div>
                 <br/>
-                <button id="addbtn">Ajouter cette art</button>
+                <button id="addbtn">Ajouter cettte oeuvre d'art</button>
             </div>
         </div>
     </div>
