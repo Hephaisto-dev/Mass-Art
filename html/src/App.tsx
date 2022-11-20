@@ -90,7 +90,10 @@ function displaySImage() {
 function displayPercent() {
   let e = document.getElementById("odd");
   if (!e) return;
-  e.innerText = arts[currentArt].percentage.toString() + " % de chance d'avoir cette oeuvre d'art";
+  if (!arts[currentArt].sold)
+    e.innerText = arts[currentArt].percentage.toString() + " % de chance d'avoir cette oeuvre d'art";
+  else
+    e.innerText = "Art déja aquis";
 }
 
 function displayInPercent() {
@@ -115,7 +118,16 @@ function showSLoader(show : boolean) {
 function enableTips(enable : boolean) {
   let e = document.getElementById("rightpantop");
   if (!e) return;
-  e.setAttribute("disabled", enable ? "1" : "0");
+  for (let i = 0; i < e.children.length; i++) {
+    if (!enable)
+      e.children.item(i)?.setAttribute("disabled", "1");
+    else
+      e.children.item(i)?.removeAttribute("disabled");
+  }
+  if (enable)
+    e.style.opacity = "1";
+  else
+    e.style.opacity = "0.5";
 }
 
 
@@ -187,7 +199,7 @@ WalletClient.getAccountFromSecretKey(clientPrivateKey).then((a : IAccount) => {
 
 
 
-async function waitResponse(opid : string) {
+async function waitResponse(opid : string, cb : any) {
   const eventsFilter = {
     start: null,
     end: null,
@@ -201,6 +213,7 @@ async function waitResponse(opid : string) {
     r = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
     for (let i = 0; i < r.length; i++) {
       console.log("Get response for operation id " + opid + " :\n", r[i].data);
+      if (cb) cb(r[i].data as string);
     }
   }
 }
@@ -222,10 +235,15 @@ function doTip() {
       parameter: args.serialize()
     } as ICallData, account
   ).then(function (data : Array<string>) {
-    console.log("Call draw");
-    console.log("callSmartContract result : ", JSON.stringify(data));
+    console.log("Call function 'draw' on contract");
+    //console.log("callSmartContract result : ", JSON.stringify(data));
     for (let i = 0; i < data.length; i++) {
-      waitResponse(data[i]);
+      waitResponse(data[i], (data : string) => {
+        if (data.indexOf('"winner"') !== -1)
+          alert("Vous avez obtenue l'oeuvre d'art!");
+        else
+          alert("Pas de chance, vous n'avez pas eu l'oeuvre d'art");
+      });
     }
   });
 }
@@ -274,7 +292,7 @@ function addArt() {
       console.log("Call draw with args : ", args);
       console.log("callSmartContract result : ", JSON.stringify(data));
       for (let i = 0; i < data.length; i++) {
-        waitResponse(data[i]).then(() => {
+        waitResponse(data[i], null).then(() => {
           updateArts();
         });
       }
@@ -319,13 +337,13 @@ function main() {
   });
 
   document.getElementById("lessbtn")?.addEventListener("click", () => {
-    if (amount > 10) amount -= 10;
+    if (amount > 2) amount -= 2;
     displayAmount();
   });
 
   document.getElementById("nextbtn")?.addEventListener("click", () => {
-    nextArt();
     if (arts.length > 0) {
+      nextArt();
       displayImage();
       displayPercent();
       displayCount();
