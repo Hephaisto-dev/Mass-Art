@@ -1,29 +1,33 @@
 // A simple smart contract made by Héphaïsto#8899
 
-import { generateEvent, Args, unsafeRandom, transferCoins, Address } from "@massalabs/massa-as-sdk";
+import { generateEvent, Args, unsafeRandom, Address, transferCoins, transferCoinsOf } from "@massalabs/massa-as-sdk";
 import { caller, transferedCoins } from "@massalabs/massa-as-sdk/assembly/std/context";
 import { get, set, has } from "@massalabs/massa-as-sdk/assembly/std/storage";
 
 export function draw(stringifyArgs: string): void {
-    //if (transferedCoins() <= 0 || transferedCoins() % 10 != 0) return;
+    //if (transferedCoins() <= 0) return;
     const args = new Args(stringifyArgs);
     const id = args.nextU32();
     if (has(id.toString())) {
         const args_str = new Args(get(id.toString()));
-        const random = (f64(unsafeRandom()) / Number.MAX_SAFE_INTEGER) * 100;
+        const random : i64 = unsafeRandom();
+        let random_mod : i64 = random % 100;
+        if (random_mod < 0) random_mod = -random_mod;
         const owner_str = args_str.nextString();
         const owner = Address.fromByteString(owner_str);
         const percentage = args_str.nextU32();
         const url = args_str.nextString();
         let acquired = args_str.nextU32();
-        if (acquired == 1) return;
-        transferCoins(owner, transferedCoins() * 80 / 100);
-        if (random < percentage){
-            generateEvent(`{"winner": ${caller()._value}}`);
-            acquired = 1;
-            set(id.toString(), new Args().add(caller()).add(percentage).add(url).add(acquired).serialize());
-        }
-        generateEvent("{\"sucess\": true}");
+        if (acquired == 1) generateEvent("This NFT has already been acquired");
+        else {
+            transferCoins(owner, transferedCoins() * 80 / 100);
+            if (u32(random_mod) < percentage){
+                acquired = 1;
+                set(id.toString(), new Args().add(caller()).add(percentage).add(url).add(acquired).serialize());
+                generateEvent(`{"winner": ${caller()._value}}`);
+            }
+        } 
+        generateEvent("{\"sucess\": true, \"random\": " + random_mod.toString() + ", \"transfered\": " + transferedCoins().toString() + "}");
     }
     else {
         generateEvent("{\"error\": \"no such id in this smart contract\"}");
